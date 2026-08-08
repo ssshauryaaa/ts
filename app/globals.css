@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-obsidian: #0A0C0E;
+  --color-gunmetal: #14171C;
+  --color-steel: #1F242B;
+  --color-imperial-red: #DC2626;
+  --color-amber: #F59E0B;
+  --color-data-blue: #3B82F6;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Star Jedi */
+@font-face {
+  font-family: "Star Jedi";
+  src: url("/fonts/Starjedi.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.font-star-jedi {
+  font-family: "Star Jedi", sans-serif;
+}
+
+.font-ibm {
+  font-family: var(--font-ibm), sans-serif;
+}
+
+.font-exo {
+  font-family: var(--font-exo), sans-serif;
+}
+
+.font-chakra {
+  font-family: var(--font-chakra), sans-serif;
+}
+
+.font-share-tech {
+  font-family: var(--font-share-tech), monospace;
+}
+
+/* Custom Scrollbar */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0C0E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DC2626;
+  border-radius: 3px;
+}
+
+/* Starfield */
+
+body {
+  background-color: #0A0C0E;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, .8), transparent),
+    radial-gradient(2px 2px at 50px 160px, #ddd, transparent),
+    radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, .6), transparent),
+    radial-gradient(2px 2px at 130px 80px, #fff, transparent),
+    radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, .7), transparent);
+
+  background-size: 200px 200px;
+  background-repeat: repeat;
+
+  opacity: .4;
+  z-index: -1;
+
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: .3;
+  }
+
+  100% {
+    opacity: .8;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Glass */
+
+.glass {
+  background: rgba(20, 23, 28, .8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: .5px solid #1F242B;
+}
+
+/* Scanlines */
+
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  background: repeating-linear-gradient(0deg,
+      rgba(255, 255, 255, .03) 0px,
+      rgba(255, 255, 255, .03) 1px,
+      transparent 1px,
+      transparent 3px);
+
+  pointer-events: none;
+}
+
+.scanlines>* {
+  position: relative;
+  z-index: 1;
 }

@@ -1,69 +1,134 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useEffect, useState } from 'react'
+
+export default function LoginPage() {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          return 100
+        }
+
+        return prev + 2
+      })
+    }, 80)
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-2xl">
+
+        {/* Main Terminal Card */}
+        <div className="glass scanlines rounded-xl p-6 sm:p-8 shadow-2xl">
+
+          {/* Star Jedi Heading */}
+          <h1 className="font-star-jedi text-3xl sm:text-4xl text-white uppercase tracking-wider mb-1">
+            COMMAND NEXUS
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          {/* IBM Plex Body */}
+          <p className="font-ibm text-sm text-gray-400 mb-6">
+            Imperial Strategic Command — Awaiting secure uplink...
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          {/* Terminal Output */}
+          <div className="font-share-tech text-base space-y-2">
+
+            <p className="text-data-blue">
+              IMPERIAL TERMINAL v1.0
+            </p>
+
+            <p className="text-amber">
+              establishing secure uplink...
+            </p>
+
+            {/* Progress Bar */}
+            <div className="w-full h-3.5 bg-steel rounded-sm mt-2 overflow-hidden">
+              <div
+                className="h-full bg-imperial-red transition-all duration-100 ease-linear rounded-sm"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+
+            <p className="text-amber">
+              {progress}% synced
+              <span className="opacity-60 animate-pulse">_</span>
+            </p>
+
+          </div>
+
+          {/* Sector Information */}
+          <div className="mt-6 pt-4 border-t border-steel flex justify-between items-center">
+
+            <span className="font-exo font-bold text-2xl text-white tracking-wide">
+              SECTOR-7
+            </span>
+
+            <span className="font-exo font-semibold text-sm text-imperial-red uppercase tracking-wider border border-imperial-red/30 px-3 py-1 rounded-sm">
+              awaiting_directive
+            </span>
+
+          </div>
+
+          {/* Statistics */}
+          <div className="mt-4 flex gap-6">
+
+            <div>
+              <p className="font-chakra font-semibold text-3xl text-imperial-red">
+                247
+              </p>
+
+              <p className="font-ibm text-xs text-gray-500">
+                ACTIVE TARGETS
+              </p>
+            </div>
+
+            <div>
+              <p className="font-chakra font-semibold text-3xl text-data-blue">
+                68%
+              </p>
+
+              <p className="font-ibm text-xs text-gray-500">
+                SECTOR CONTROL
+              </p>
+            </div>
+
+          </div>
+
+          {/* Login Button */}
+          <button
+            className="
+              mt-6
+              w-full
+              bg-imperial-red
+              hover:bg-red-700
+              transition-colors
+              text-white
+              font-exo
+              font-semibold
+              py-3
+              rounded-lg
+              tracking-wider
+              uppercase
+            "
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Initiate Session
+          </button>
+
         </div>
-      </main>
-    </div>
-  );
+
+        {/* Footer */}
+        <p className="text-center text-gray-600 font-ibm text-xs mt-4">
+          PROJECT: VERDICT v1.0 • Imperial High Command
+        </p>
+
+      </div>
+    </main>
+  )
 }
