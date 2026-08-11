@@ -53,42 +53,10 @@
   border-radius: 3px;
 }
 
-/* Starfield */
+/* Starfield background is managed via StarfieldBackground component */
 
 body {
   background-color: #0A0C0E;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-
-  background-image:
-    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, .8), transparent),
-    radial-gradient(2px 2px at 50px 160px, #ddd, transparent),
-    radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, .6), transparent),
-    radial-gradient(2px 2px at 130px 80px, #fff, transparent),
-    radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, .7), transparent);
-
-  background-size: 200px 200px;
-  background-repeat: repeat;
-
-  opacity: .4;
-  z-index: -1;
-
-  animation: twinkle 4s ease-in-out infinite alternate;
-}
-
-@keyframes twinkle {
-  0% {
-    opacity: .3;
-  }
-
-  100% {
-    opacity: .8;
-  }
 }
 
 /* Glass */

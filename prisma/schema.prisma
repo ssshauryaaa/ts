@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Agent {
+  id        String   @id @default(cuid())
+  callsign  String   @unique
+  rank      String   @default("Cadet")
+  sector    String?
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  sightings  Sighting[]
+  claims     Bounty[]      @relation("ClaimedBy")
+  analyses   AnalysisLog[]
+  broadcasts Broadcast[]
+  messages   Message[]
+  events     Event[]
+}
+
+model Sector {
+  id              String @id @default(cuid())
+  name            String @unique
+  complianceIndex Int    @default(0) // 0-100
+  status          String @default("contested") // contested | pacified | lost
+}
+
+model Sighting {
+  id          String   @id @default(cuid())
+  sector      String
+  description String
+  threatLevel String // low | moderate | high | critical
+  x           Float // map coordinate
+  y           Float
+  reportedBy  String
+  agent       Agent    @relation(fields: [reportedBy], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Dossier {
+  id          String   @id @default(cuid())
+  callsign    String
+  threatLevel String
+  lastSector  String
+  associates  String? // comma-separated or JSON
+  notes       String?
+  status      String   @default("active") // active | cleared
+  bounty      Bounty?
+  createdAt   DateTime @default(now())
+}
+
+model Bounty {
+  id          String    @id @default(cuid())
+  dossierId   String    @unique
+  dossier     Dossier   @relation(fields: [dossierId], references: [id])
+  reward      Int
+  status      String    @default("open") // open | claimed | resolved
+  claimedById String?
+  claimedBy   Agent?    @relation("ClaimedBy", fields: [claimedById], references: [id])
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model AnalysisLog {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  inputText   String
+  threatScore Int
+  summary     String
+  flagged     String   @default("[]") // JSON array of flagged phrases
+  createdAt   DateTime @default(now())
+}
+
+model Broadcast {
+  id        String   @id @default(cuid())
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  prompt    String
+  generated String
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  channel   String
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  type      String // SIGHTING_REPORTED | BOUNTY_CLAIMED | BOUNTY_RESOLVED | DOSSIER_CLEARED | COMPLIANCE_TICK | MESSAGE_SENT | AGENT_JOINED
+  agentId   String?
+  agent     Agent?   @relation(fields: [agentId], references: [id])
+  payload   String // JSON blob
+  createdAt DateTime @default(now())
+}
