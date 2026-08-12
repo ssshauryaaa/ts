@@ -1,0 +1,78 @@
+.log {
+  width: min(92vw, 480px);
+  margin: 0 auto;
+  font-size: 13px;
+  color: var(--ink-dim);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 92px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.status[data-status="OK"] {
+  color: var(--signal-cyan);
+}
+
+.status[data-status="WARN"] {
+  color: var(--imperial-red);
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--imperial-red);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.progressTrack {
+  margin-top: 14px;
+  height: 4px;
+  width: 100%;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--signal-cyan);
+  transition: width 0.3s var(--ease-standard);
+}
+
+.progressLabel {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+  .progressFill {
+    transition: none;
+  }
+}

@@ -1,0 +1,30 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stamp {
+  position: relative;
+  z-index: 61;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(20px, 5vw, 32px);
+  letter-spacing: 0.12em;
+  color: var(--imperial-red);
+  border: 3px solid var(--imperial-red);
+  padding: 14px 28px;
+  transform: rotate(-4deg);
+  opacity: 0;
+}
+
+.wipePanel {
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  background: var(--imperial-red);
+  transform: translateY(0);
+}

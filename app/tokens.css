@@ -1,0 +1,33 @@
+:root {
+  --void: #05050a;
+  --ink: #d7dde3;
+  --ink-dim: #7a828c;
+  --imperial-red: #c81d25;
+  --signal-cyan: #2fd0c9;
+  --panel-bg: rgba(255, 255, 255, 0.04);
+  --panel-border: rgba(255, 255, 255, 0.08);
+
+  --font-display: "Starjedi", sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --dur-slow: 900ms;
+
+  /* Console App Mappings */
+  --font-heading: var(--font-exo), sans-serif;
+  --font-body: var(--font-ibm), sans-serif;
+  --font-nav: var(--font-chakra), sans-serif;
+  --font-terminal: var(--font-share-tech), monospace;
+  --font-mono-stat: var(--font-share-tech), monospace;
+  
+  --color-text-primary: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-text-dim: #64748b;
+  --color-caution-amber: #F59E0B;
+  --accent-critical: #DC2626;
+  --accent-warning: #F59E0B;
+  --accent-info: #3B82F6;
+  --ease-terminal: cubic-bezier(0.4, 0, 0.2, 1);
+}

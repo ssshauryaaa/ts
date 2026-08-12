@@ -6,6 +6,7 @@ import {
   Chakra_Petch,
   Share_Tech_Mono,
 } from 'next/font/google'
+import './tokens.css'
 import './globals.css'
 
 const inter = Inter({
