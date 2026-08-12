@@ -39,8 +39,8 @@ const shareTech = Share_Tech_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'PROJECT: VERDICT',
-  description: 'Imperial Strategic Command Nexus',
+  title: 'Empire State of Mind',
+  description: 'PROJECT: EMPIRE STATE OF MIND',
 }
 
 export default function RootLayout({

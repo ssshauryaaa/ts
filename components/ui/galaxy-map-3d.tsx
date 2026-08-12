@@ -671,15 +671,22 @@ export function GalaxyMap3D({
         renderer.domElement.addEventListener("pointerleave", onPointerLeave);
 
         function buildTooltipHTML(state: TooltipState): string {
+            const titleStyle = (color: string) =>
+                `font-size:9px;font-weight:600;letter-spacing:0.02em;color:${color};margin-bottom:4px;`;
+            const badgeStyle = (color: string) =>
+                `display:inline-block;border:1px solid ${color};color:${color};padding:1px 4px;` +
+                `font-size:7px;font-weight:500;letter-spacing:0.04em;border-radius:2px;margin-bottom:5px;`;
+            const rowStyle = "font-size:8px;font-weight:400;color:#cbd5e1;line-height:1.55;";
+
             if (state.kind === "sector") {
                 const s = SECTORS[state.index];
                 const meta = SECTOR_META[s.label];
                 const colorHex = `#${STATUS_COLOR[s.status].toString(16).padStart(6, "0")}`;
                 return `
-                    <div style="font-weight:700;color:${colorHex};margin-bottom:4px;">${s.label}</div>
-                    <div style="display:inline-block;border:1px solid ${colorHex};color:${colorHex};padding:1px 6px;font-size:10px;letter-spacing:0.06em;margin-bottom:6px;">${s.status.toUpperCase()}</div>
-                    <div>Imperial compliance: ${meta.compliance}%</div>
-                    <div>Signal contacts logged: ${meta.contacts}</div>
+                    <div style="${titleStyle(colorHex)}">${s.label}</div>
+                    <div style="${badgeStyle(colorHex)}">${s.status.toUpperCase()}</div>
+                    <div style="${rowStyle}">Imperial compliance: ${meta.compliance}%</div>
+                    <div style="${rowStyle}">Signal contacts logged: ${meta.contacts}</div>
                 `;
             }
             if (state.kind === "sighting") {
@@ -687,21 +694,27 @@ export function GalaxyMap3D({
                 const meta = SIGHTING_META[state.index];
                 const colorHex = `#${THREAT_COLOR[sig.level].toString(16).padStart(6, "0")}`;
                 return `
-                    <div style="font-weight:700;color:${colorHex};margin-bottom:4px;">${meta.codename}</div>
-                    <div style="display:inline-block;border:1px solid ${colorHex};color:${colorHex};padding:1px 6px;font-size:10px;letter-spacing:0.06em;margin-bottom:6px;">${sig.level.toUpperCase()}</div>
-                    <div>Last known: ${meta.coords}</div>
-                    <div>Recommended: ${meta.action}</div>
+                    <div style="${titleStyle(colorHex)}">${meta.codename}</div>
+                    <div style="${badgeStyle(colorHex)}">${sig.level.toUpperCase()}</div>
+                    <div style="${rowStyle}">Last known: ${meta.coords}</div>
+                    <div style="${rowStyle}">Recommended: ${meta.action}</div>
                 `;
             }
             return `
-                <div style="font-weight:700;color:#00e5ff;margin-bottom:4px;">SIGNAL JAMMED</div>
-                <div>LOCATION UNCONFIRMED</div>
+                <div style="${titleStyle("#00e5ff")}">SIGNAL JAMMED</div>
+                <div style="${rowStyle}">LOCATION UNCONFIRMED</div>
             `;
         }
 
+        let lastTooltipKey = "";
+
         function updateTooltip() {
             if (!hovered || !tooltip || !mount) {
-                if (tooltip) tooltip.style.opacity = "0";
+                if (tooltip) {
+                    tooltip.style.opacity = "0";
+                    tooltip.style.transform += " scale(0.96)";
+                }
+                lastTooltipKey = "";
                 return;
             }
             let worldPos: THREE.Vector3;
@@ -714,8 +727,12 @@ export function GalaxyMap3D({
             const x = (vector.x * 0.5 + 0.5) * rect.width;
             const y = (-vector.y * 0.5 + 0.5) * rect.height;
 
-            tooltip.innerHTML = buildTooltipHTML(hovered);
-            tooltip.style.transform = `translate(${x + 14}px, ${y - 10}px)`;
+            const key = `${hovered.kind}-${hovered.index}`;
+            if (key !== lastTooltipKey) {
+                tooltip.innerHTML = buildTooltipHTML(hovered);
+                lastTooltipKey = key;
+            }
+            tooltip.style.transform = `translate(${x + 12}px, ${y - 8}px) scale(1)`;
             tooltip.style.opacity = "1";
             const color =
                 hovered.kind === "sector"
@@ -860,16 +877,16 @@ export function GalaxyMap3D({
                     left: 0,
                     opacity: 0,
                     pointerEvents: "none",
-                    background: "rgba(0,0,0,0.92)",
+                    background: "rgba(0,0,0,0.9)",
                     border: "1px solid #dc2626",
-                    borderRadius: 0,
-                    padding: "8px 10px",
-                    fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
-                    fontSize: "12px",
+                    borderRadius: 5,
+                    padding: "6px 8px",
+                    fontSize: "9px",
                     color: "#e5e7eb",
                     lineHeight: 1.5,
-                    boxShadow: "0 0 16px rgba(220,38,38,0.35)",
-                    transition: "opacity 120ms ease",
+                    boxShadow: "0 4px 18px rgba(0,0,0,0.45), 0 0 14px rgba(220,38,38,0.3)",
+                    transition: "opacity 180ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease",
+                    willChange: "transform, opacity",
                     whiteSpace: "nowrap",
                     zIndex: 10,
                 }}
