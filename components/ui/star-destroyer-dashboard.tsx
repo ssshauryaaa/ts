@@ -414,7 +414,20 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
   const wrapRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [loadState, setLoadState] = useState<"loading" | "loaded" | "fallback">(modelUrl ? "loading" : "fallback");
+  // Drives mobile-specific JSX layout (bottom bar, tooltip sizing, loading
+  // indicator). Kept separate from the WebGL effect below so a breakpoint
+  // crossing (e.g. rotating the device) never tears down and re-initializes
+  // the whole three.js scene — only the HTML overlay re-renders.
+  const [isCompact, setIsCompact] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    setIsCompact(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsCompact(e.matches);
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -444,6 +457,13 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // Touch gestures on the canvas (drag-to-orbit, pinch-to-zoom) should be
+    // handled entirely by OrbitControls, not the browser's default scroll /
+    // pinch-zoom / pull-to-refresh behavior. Without this, a drag on mobile
+    // can trigger page scroll instead of (or in addition to) rotating the
+    // ship, and pinch can zoom the whole page.
+    renderer.domElement.style.touchAction = "none";
+    (renderer.domElement.style as any).webkitTapHighlightColor = "transparent";
     mount.appendChild(renderer.domElement);
 
     // ── Controls ───────────────────────────────────────────────────────────────
@@ -677,8 +697,36 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
     const pointerNDC = new THREE.Vector2(-10, -10);
     let hoveredId: string | null = null;
     let isHovering = false;
+    // Touch has no hover state, so a tap alone can't distinguish "I'm
+    // looking at this hotspot" from "take me there". First tap on a hotspot
+    // selects it (shows the tooltip, same visual feedback hover gives on
+    // desktop); a second tap on the same hotspot — or the on-screen "OPEN"
+    // affordance in the tooltip — navigates. Tapping empty space clears the
+    // selection. Desktop mouse behavior (hover, then a single click) is
+    // untouched.
+    let selectedId: string | null = null;
+    let lastPointerWasTouch = false;
+
+    function raycastAt(clientX: number, clientY: number): string | null {
+      const rect = mount!.getBoundingClientRect();
+      const ndc = new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
+      );
+      raycaster.setFromCamera(ndc, camera);
+      const hits = raycaster.intersectObjects(interactableObjects, true);
+      if (!hits.length) return null;
+      let obj: THREE.Object3D | null = hits[0].object;
+      while (obj && obj !== scene) {
+        if (obj.userData?.moduleId) return obj.userData.moduleId as string;
+        obj = obj.parent;
+      }
+      return null;
+    }
 
     function onPointerMove(e: PointerEvent) {
+      lastPointerWasTouch = e.pointerType === "touch";
+      if (lastPointerWasTouch) return; // no true hover on touch; handled via tap
       const rect = mount!.getBoundingClientRect();
       pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -689,6 +737,22 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
     }
 
     function onClick(e: PointerEvent) {
+      const isTouch = e.pointerType === "touch" || lastPointerWasTouch;
+      if (isTouch) {
+        const hitId = raycastAt(e.clientX, e.clientY);
+        if (!hitId) {
+          selectedId = null;
+          return;
+        }
+        if (selectedId === hitId) {
+          const mod = MODULES.find((m) => m.id === hitId);
+          if (mod) router.push(mod.href);
+          selectedId = null;
+        } else {
+          selectedId = hitId;
+        }
+        return;
+      }
       if (!hoveredId) return;
       const mod = MODULES.find((m) => m.id === hoveredId);
       if (mod) router.push(mod.href);
@@ -706,8 +770,19 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
       if (!mount) return;
       const { clientWidth: w, clientHeight: h } = mount;
       if (w === 0 || h === 0) return;
+
+      // Narrow/short viewports (phones, small panes) get a wider FOV and a
+      // closer default zoom range so the ship reads at a reasonable size
+      // instead of shrinking to fit a tall, narrow frustum. This only
+      // touches fov and distance *limits*, never camera.position directly,
+      // so it never fights an in-progress user drag/zoom.
+      const compact = w < 640 || h < 480;
+      camera.fov = compact ? 58 : 45;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      controls.minDistance = compact ? 5 : 6;
+      controls.maxDistance = compact ? 16 : 22;
+
       renderer.setSize(w, h);
       hyperspace.setResolution(w, h);
     }
@@ -781,16 +856,20 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
 
       if (newHoverId !== hoveredId) {
         hoveredId = newHoverId;
-        isHovering = !!hoveredId;
-        renderer.domElement.style.cursor = isHovering ? "pointer" : "grab";
-        controls.autoRotate = !isHovering;
       }
+
+      // Touch selection (persists across frames without needing continuous
+      // hover) takes priority over live mouse hover for what's "active".
+      const activeId = selectedId ?? hoveredId;
+      isHovering = !!activeId;
+      renderer.domElement.style.cursor = hoveredId ? "pointer" : "grab";
+      controls.autoRotate = !isHovering;
 
       MODULES.forEach((mod, idx) => {
         const glow = moduleGlows.get(mod.id);
         const reticle = moduleReticles.get(mod.id);
         const lockRing = moduleLockRings.get(mod.id);
-        const isActive = mod.id === hoveredId;
+        const isActive = mod.id === activeId;
         const breathe = 1 + Math.sin(t * 1.8 + idx) * 0.06;
 
         if (glow) {
@@ -823,23 +902,38 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
       });
 
       if (tooltip) {
-        if (hoveredId && hotspotPositions[hoveredId] && eased > 0.05) {
-          const mod = MODULES.find((m) => m.id === hoveredId)!;
-          const worldPos = hotspotPositions[hoveredId].clone().applyMatrix4(shipContainer.matrixWorld);
+        if (activeId && hotspotPositions[activeId] && eased > 0.05) {
+          const mod = MODULES.find((m) => m.id === activeId)!;
+          const worldPos = hotspotPositions[activeId].clone().applyMatrix4(shipContainer.matrixWorld);
           const v = worldPos.project(camera);
           const rect = mount!.getBoundingClientRect();
           const sx = (v.x * 0.5 + 0.5) * rect.width;
           const sy = (-v.y * 0.5 + 0.5) * rect.height;
+          const isTouchActive = !!selectedId;
 
-          tooltip.style.transform = `translate(${sx + 12}px, ${sy - 8}px) scale(1)`;
           tooltip.style.opacity = "1";
           tooltip.style.borderColor = mod.cssColor;
           tooltip.innerHTML = `
             <div style="height:2px;background:${mod.cssColor};margin:-7px -10px 6px;box-shadow:0 0 6px ${mod.cssColor};"></div>
             <div style="font-weight:700;color:${mod.cssColor};letter-spacing:0.07em;font-size:10.5px;">${mod.label}</div>
             <div style="color:#8b98a8;font-size:9px;margin-top:2px;">${mod.sublabel}</div>
-            <div style="color:#5b6472;font-size:8px;margin-top:4px;letter-spacing:0.09em;">▸ OPEN MODULE</div>
+            <div style="color:#5b6472;font-size:8px;margin-top:4px;letter-spacing:0.09em;">${isTouchActive ? "▸ TAP AGAIN TO OPEN" : "▸ OPEN MODULE"}</div>
           `;
+
+          // Clamp so the tooltip never renders off the edge of a narrow
+          // viewport — measure after content is set, then flip to the left
+          // of the hotspot if it would overflow the right edge, and clamp
+          // vertically within the container.
+          const tw = tooltip.offsetWidth || 160;
+          const th = tooltip.offsetHeight || 60;
+          const margin = 8;
+          let tx = sx + 12;
+          let ty = sy - 8;
+          if (tx + tw > rect.width - margin) tx = sx - tw - 12;
+          tx = Math.max(margin, Math.min(tx, rect.width - tw - margin));
+          ty = Math.max(margin, Math.min(ty, rect.height - th - margin));
+
+          tooltip.style.transform = `translate(${tx}px, ${ty}px) scale(1)`;
         } else {
           tooltip.style.opacity = "0";
         }
@@ -878,14 +972,24 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
 
       {loadState === "loading" && (
         <div style={{
-          position: "absolute", top: 20, left: 20,
-          background: "rgba(0,0,0,0.85)", border: "1px solid rgba(220,38,38,0.4)",
-          borderRadius: 4, padding: "8px 14px",
-          fontFamily: '"IBM Plex Mono", monospace', fontSize: 10, color: "#f8fafc",
-          display: "flex", alignItems: "center", gap: 10, pointerEvents: "none", zIndex: 20,
+          position: "absolute",
+          top: "max(16px, env(safe-area-inset-top))",
+          left: "max(16px, env(safe-area-inset-left))",
+          right: 16,
+          fontFamily: '"Share Tech Mono", monospace',
+          fontSize: isCompact ? 10.5 : 12,
+          color: "#F3F4F6",
+          display: "flex", alignItems: "center", gap: 10,
+          pointerEvents: "none", zIndex: 20,
+          letterSpacing: isCompact ? "0.02em" : "normal",
         }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#dc2626", animation: "pulse 1s infinite" }} />
-          LOADING 3D SPACESHIP MODEL...
+          <div style={{
+            flexShrink: 0,
+            width: 8, height: 8,
+            background: "#DC2626",
+            animation: "blink 1s step-start infinite"
+          }} />
+          {isCompact ? "LOADING MODEL..." : "LOADING 3D SPACESHIP MODEL..."}
         </div>
       )}
 
@@ -898,30 +1002,73 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
           backdropFilter: "blur(3px)",
           border: "1px solid #dc2626",
           clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%)",
-          padding: "9px 10px 7px",
+          padding: isCompact ? "10px 12px 8px" : "9px 10px 7px",
           fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
-          fontSize: "11px", color: "#e5e7eb", lineHeight: 1.4,
+          fontSize: isCompact ? "12px" : "11px", color: "#e5e7eb", lineHeight: 1.4,
           boxShadow: "0 4px 16px rgba(0,0,0,0.55), 0 0 12px rgba(220,38,38,0.22)",
           transition: "opacity 140ms ease, transform 140ms ease",
           transformOrigin: "0 50%",
-          whiteSpace: "nowrap", zIndex: 10,
+          maxWidth: isCompact ? "min(78vw, 240px)" : "260px",
+          whiteSpace: isCompact ? "normal" : "nowrap", zIndex: 10,
         }}
       />
 
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0,
-        display: "flex", justifyContent: "center", gap: 20,
-        padding: "12px 24px",
-        background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
-        pointerEvents: "none", zIndex: 5,
-      }}>
+      <div
+        style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          display: "flex",
+          justifyContent: isCompact ? "flex-start" : "center",
+          alignItems: "center",
+          gap: isCompact ? 4 : 20,
+          padding: isCompact
+            ? "10px max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))"
+            : "12px 24px max(12px, env(safe-area-inset-bottom))",
+          background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+          // The bar itself no longer blocks pointer events (buttons below
+          // opt back in individually), and on narrow screens it becomes a
+          // horizontally scrollable, snap-scrolling strip so six modules
+          // never wrap into an unreadable multi-row block or get clipped.
+          pointerEvents: "none",
+          overflowX: isCompact ? "auto" : "visible",
+          scrollSnapType: isCompact ? "x proximity" : undefined,
+          WebkitOverflowScrolling: "touch",
+          zIndex: 5,
+        }}
+      >
         {MODULES.map((mod) => (
-          <div key={mod.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: mod.cssColor, boxShadow: `0 0 8px ${mod.cssColor}` }} />
-            <span style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: 9, color: "#94a3b8", letterSpacing: "0.1em" }}>
+          <button
+            key={mod.id}
+            type="button"
+            onClick={() => router.push(mod.href)}
+            aria-label={`${mod.label}: ${mod.sublabel}`}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              flexShrink: 0,
+              scrollSnapAlign: isCompact ? "start" : undefined,
+              minHeight: 44,
+              padding: isCompact ? "0 10px" : "0 4px",
+              background: "transparent",
+              border: "none",
+              borderRadius: 8,
+              cursor: "pointer",
+              pointerEvents: "auto",
+              WebkitTapHighlightColor: "transparent",
+              touchAction: "manipulation",
+            }}
+            onFocus={(e) => { e.currentTarget.style.outline = `2px solid ${mod.cssColor}`; e.currentTarget.style.outlineOffset = "2px"; }}
+            onBlur={(e) => { e.currentTarget.style.outline = "none"; }}
+          >
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: mod.cssColor, boxShadow: `0 0 8px ${mod.cssColor}`, flexShrink: 0 }} />
+            <span style={{
+              fontFamily: '"IBM Plex Mono", monospace',
+              fontSize: isCompact ? 10 : 9,
+              color: "#94a3b8",
+              letterSpacing: "0.1em",
+              whiteSpace: "nowrap",
+            }}>
               {mod.label}
             </span>
-          </div>
+          </button>
         ))}
       </div>
     </div>
