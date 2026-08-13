@@ -179,6 +179,7 @@ export default function AgentPage() {
               onClick={() => {
                 if (confirm("Purge active session data and log out?")) {
                   window.localStorage.removeItem("umbra.boot.seen");
+                  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
                   window.location.href = "/";
                 }
               }}

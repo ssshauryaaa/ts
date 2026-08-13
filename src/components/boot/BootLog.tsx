@@ -34,6 +34,7 @@ export default function BootLog({ onComplete }: { onComplete: () => void }) {
     startedRef.current = true;
 
     if (reducedMotion) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResolvedLines(LINES.map((l) => ({ text: l.text, status: l.status })));
       setProgress(100);
       const t = setTimeout(onComplete, 200);

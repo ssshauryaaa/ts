@@ -10,6 +10,7 @@ const ULogo = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(

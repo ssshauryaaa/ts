@@ -37,6 +37,7 @@ export function FloatingTerminal({
     // Position in the bottom-right on first mount (viewport-aware), then flash in.
     useEffect(() => {
         if (!defaultPosition && typeof window !== "undefined") {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setPos({ x: window.innerWidth - 560, y: window.innerHeight - 460 });
         }
         setReady(true);

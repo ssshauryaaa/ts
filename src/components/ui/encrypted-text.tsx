@@ -39,6 +39,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
     scrambleRef.current = generateGibberish(text, charset).split("");
     startRef.current = performance.now();
     lastFlipRef.current = startRef.current;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRevealCount(0);
     let cancelled = false;
     const update = (now: number) => {
@@ -60,6 +61,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
   if (!text) return null;
   return (
     <motion.span ref={ref} className={cn(className)} aria-label={text} role="text" suppressHydrationWarning>
+      {/* eslint-disable-next-line react-hooks/refs */}
       {text.split("").map((char, i) => {
         const isRevealed = i < revealCount;
         const display = isRevealed ? char : char === " " ? " " : (scrambleRef.current[i] ?? generateRandomCharacter(charset));

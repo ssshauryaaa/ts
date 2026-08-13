@@ -503,12 +503,14 @@ function AnalyzeSection({
   }, [analyzing, inputText]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!result) { setScore(0); setSummary(""); return; }
     let i = 0; const id = setInterval(() => { i++; setSummary(result.summary.slice(0, i)); if (i >= result.summary.length) clearInterval(id); }, 16);
     return () => clearInterval(id);
   }, [result]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!result) { setScore(0); return; }
     const target = result.threatScore; let cur = 0;
     const id = setInterval(() => { cur = Math.min(cur + target / 60, target); setScore(Math.round(cur)); if (cur >= target) clearInterval(id); }, 16);

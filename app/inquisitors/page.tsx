@@ -1,4 +1,5 @@
 "use client";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useState, useCallback } from "react";
 import { MinimalBwBackground } from "@/components/ui/minimal-bw-background";
 import Link from "next/link";

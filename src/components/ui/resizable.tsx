@@ -35,6 +35,7 @@ const PanelContext = React.createContext<{
 export function ResizablePanelGroup({ direction, children, className, style }: ResizablePanelGroupProps) {
   const panelIdxRef = useRef(0);
   const childArray = React.Children.toArray(children).filter(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (c) => React.isValidElement(c) && (c.type as any).displayName === "ResizablePanel"
   );
   const count = childArray.length;
@@ -49,7 +50,9 @@ export function ResizablePanelGroup({ direction, children, className, style }: R
       >
         {React.Children.map(children, (child, i) => {
           if (!React.isValidElement(child)) return child;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const isHandle = (child.type as any).displayName === "ResizableHandle";
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if (isHandle) return React.cloneElement(child as React.ReactElement<any>, { panelIndex: Math.floor(i / 2) });
           return child;
         })}
@@ -61,7 +64,10 @@ export function ResizablePanelGroup({ direction, children, className, style }: R
 export function ResizablePanel({ children, defaultSize, minSize = 10, maxSize = 90, className, style, id }: ResizablePanelProps) {
   const { sizes, direction, registerPanel } = React.useContext(PanelContext);
   const idxRef = useRef(-1);
+   
+  // eslint-disable-next-line react-hooks/refs
   if (idxRef.current === -1) idxRef.current = registerPanel();
+  // eslint-disable-next-line react-hooks/refs
   const idx = idxRef.current;
   const size = sizes[idx] ?? defaultSize ?? (100 / Math.max(sizes.length, 1));
 

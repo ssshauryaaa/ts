@@ -275,7 +275,9 @@ function createHyperspaceField(initialWidth: number, initialHeight: number) {
 
   // Interleaved instance buffers created by setPositions/setColors — write
   // directly into their backing arrays each frame instead of reallocating.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const posArr = (geometry.attributes.instanceStart as any).data.array as Float32Array;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const colArr = (geometry.attributes.instanceColorStart as any).data.array as Float32Array;
   const tmpColor = new THREE.Color();
 
@@ -298,7 +300,9 @@ function createHyperspaceField(initialWidth: number, initialHeight: number) {
       colArr[i6] = tmpColor.r; colArr[i6 + 1] = tmpColor.g; colArr[i6 + 2] = tmpColor.b;
       colArr[i6 + 3] = 0; colArr[i6 + 4] = 0; colArr[i6 + 5] = 0;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (geometry.attributes.instanceStart as any).data.needsUpdate = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (geometry.attributes.instanceColorStart as any).data.needsUpdate = true;
   }
 
@@ -423,6 +427,7 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsCompact(mq.matches);
     const onChange = (e: MediaQueryListEvent) => setIsCompact(e.matches);
     mq.addEventListener?.("change", onChange);
@@ -463,6 +468,7 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
     // can trigger page scroll instead of (or in addition to) rotating the
     // ship, and pinch can zoom the whole page.
     renderer.domElement.style.touchAction = "none";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (renderer.domElement.style as any).webkitTapHighlightColor = "transparent";
     mount.appendChild(renderer.domElement);
 

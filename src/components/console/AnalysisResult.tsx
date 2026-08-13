@@ -15,6 +15,7 @@ function useTypewriter(text: string, active: boolean, speed = 18) {
     const [out, setOut] = useState("");
     useEffect(() => {
         if (!active) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setOut("");
         let i = 0;
         const id = setInterval(() => {

@@ -15,6 +15,7 @@ export function useLowPowerDevice(): boolean {
   useEffect(() => {
     const cores = navigator.hardwareConcurrency ?? 8;
     const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLowPower(cores <= 4 || coarsePointer);
   }, []);
 

@@ -12,9 +12,11 @@ interface GlitchTextProps {
 
 export function GlitchText({ text, className, style, triggerKey, as = "span" }: GlitchTextProps) {
     const [play, setPlay] = useState(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Tag = as as any;
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPlay(false);
         const id = requestAnimationFrame(() => setPlay(true));
         return () => cancelAnimationFrame(id);

@@ -164,7 +164,7 @@ export default function StarfieldBackground({
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationId);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [starCount, speed, color, backgroundColor]);
 
     return (

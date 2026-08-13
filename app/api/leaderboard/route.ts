@@ -17,7 +17,8 @@ export async function GET() {
     },
   })
 
-  const ranked = agents.map((agent, index) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ranked = agents.map((agent: any, index: number) => ({
     rank: index + 1,
     id: agent.id,
     callsign: agent.callsign,

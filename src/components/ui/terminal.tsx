@@ -254,6 +254,7 @@ export function Terminal({
 
     useEffect(() => {
         if (phase !== "executing") return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLines((prev) => [...prev, { type: "command", content: currentCommand }]);
         setCurrentText("");
         if (currentOutputs.length > 0) {

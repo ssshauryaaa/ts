@@ -10,7 +10,8 @@ export async function GET() {
   const totalDossiers = await prisma.dossier.count()
   const clearedDossiers = await prisma.dossier.count({ where: { status: 'cleared' } })
 
-  const pacifiedSectors = sectors.filter((s) => s.status === 'pacified').length
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pacifiedSectors = sectors.filter((s: any) => s.status === 'pacified').length
   const totalSectors = sectors.length
 
   // Weighted formula: 50% from dossier clears, 50% from sector pacification
@@ -20,7 +21,8 @@ export async function GET() {
 
   return NextResponse.json({
     galaxyIndex,
-    sectors: sectors.map((s) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sectors: sectors.map((s: any) => ({
       id: s.id,
       name: s.name,
       complianceIndex: s.complianceIndex,

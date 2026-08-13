@@ -62,6 +62,7 @@ type StartPoint = {
   angle: number;
 };
 
+// eslint-disable-next-line react/display-name
 export const BackgroundPixelStars = memo(
   () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);

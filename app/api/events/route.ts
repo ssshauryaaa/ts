@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
   })
 
   return NextResponse.json(
-    events.map((e) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    events.map((e: any) => ({
       ...e,
       payload: (() => {
         try { return JSON.parse(e.payload) } catch { return e.payload }

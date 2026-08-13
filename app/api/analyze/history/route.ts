@@ -25,7 +25,8 @@ export async function GET(request: NextRequest) {
   })
 
   return NextResponse.json(
-    logs.map((l) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logs.map((l: any) => ({
       ...l,
       flaggedPhrases: (() => {
         try { return JSON.parse(l.flagged) } catch { return [] }

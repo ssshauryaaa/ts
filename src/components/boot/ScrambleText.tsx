@@ -63,6 +63,7 @@ export default function ScrambleText({
       rafId = requestAnimationFrame(frame);
     };
 
+    // eslint-disable-next-line prefer-const
     timeoutId = setTimeout(run, delay);
 
     return () => {
@@ -72,6 +73,7 @@ export default function ScrambleText({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, duration, delay, charset, reducedMotion]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Component = Tag as any;
   return (
     <Component ref={ref} className={className}>

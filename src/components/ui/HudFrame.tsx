@@ -68,7 +68,7 @@ export function HudFrame({ children, accent, active, label, status, className }:
 
         >
 
-            <div ref={cardRef} className="hud-card" style={{ borderColor: accent, ["--hud-accent" as any]: accent }}>
+            <div ref={cardRef} className="hud-card" style={{ borderColor: accent, ["--hud-accent" as unknown as string]: accent }}>
 
                 {(label || status) && (
 

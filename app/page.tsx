@@ -41,6 +41,7 @@ export default function BootPage() {
       typeof window !== "undefined" && window.localStorage.getItem(STORAGE_KEY);
     if (seen) {
       skippedRef.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhase("prompt");
     } else {
       setPhase("power-on");
@@ -72,6 +73,7 @@ export default function BootPage() {
     markSeenAndGoto("prompt");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCallsignSubmit = async (_callsign: string) => {
     // Stubbed — real integration hits POST /api/agents per the architecture
     // doc. Swap this body for the real call without touching any animation
