@@ -7,24 +7,41 @@
   justify-content: center;
 }
 
+.glowRing {
+  position: absolute;
+  width: 280px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(204, 27, 34, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+}
+
 .stamp {
   position: relative;
   z-index: 61;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: clamp(20px, 5vw, 32px);
-  letter-spacing: 0.12em;
+  font-size: clamp(18px, 4.5vw, 28px);
+  letter-spacing: 0.2em;
   color: var(--imperial-red);
-  border: 3px solid var(--imperial-red);
-  padding: 14px 28px;
+  border: 2px solid var(--imperial-red);
+  border-top-color: rgba(255, 80, 80, 0.8);
+  padding: 16px 36px;
   transform: rotate(-4deg);
   opacity: 0;
+  box-shadow:
+    0 0 24px rgba(204, 27, 34, 0.3),
+    inset 0 0 14px rgba(204, 27, 34, 0.07);
+  text-shadow: 0 0 12px rgba(204, 27, 34, 0.6);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .wipePanel {
   position: fixed;
   inset: 0;
-  z-index: 59;
-  background: var(--imperial-red);
-  transform: translateY(0);
+  z-index: 62;
+  background: #000;
+  opacity: 0;
+  transform: translateY(100%);
 }

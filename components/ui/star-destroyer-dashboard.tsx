@@ -918,12 +918,13 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
           const isTouchActive = !!selectedId;
 
           tooltip.style.opacity = "1";
-          tooltip.style.borderColor = mod.cssColor;
+          tooltip.style.borderColor = `${mod.cssColor}55`;
           tooltip.innerHTML = `
-            <div style="height:2px;background:${mod.cssColor};margin:-7px -10px 6px;box-shadow:0 0 6px ${mod.cssColor};"></div>
-            <div style="font-weight:700;color:${mod.cssColor};letter-spacing:0.07em;font-size:10.5px;">${mod.label}</div>
-            <div style="color:#8b98a8;font-size:9px;margin-top:2px;">${mod.sublabel}</div>
-            <div style="color:#5b6472;font-size:8px;margin-top:4px;letter-spacing:0.09em;">${isTouchActive ? "▸ TAP AGAIN TO OPEN" : "▸ OPEN MODULE"}</div>
+            <div style="height:1px;background:linear-gradient(to right,${mod.cssColor},${mod.cssColor}00);margin:-8px -12px 8px;box-shadow:0 0 10px ${mod.cssColor}66;"></div>
+            <div style="font-size:8px;letter-spacing:0.16em;color:${mod.cssColor}99;margin-bottom:5px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;">◈ SYSTEM NODE</div>
+            <div style="font-weight:700;color:${mod.cssColor};letter-spacing:0.1em;font-size:11px;text-shadow:0 0 8px ${mod.cssColor}66;">${mod.label}</div>
+            <div style="color:#6a7888;font-size:9px;margin-top:3px;letter-spacing:0.04em;">${mod.sublabel}</div>
+            <div style="color:rgba(245,158,11,0.55);font-size:8px;margin-top:6px;letter-spacing:0.12em;border-top:1px solid rgba(255,255,255,0.05);padding-top:5px;">${isTouchActive ? "▸ TAP AGAIN TO OPEN" : "▸ OPEN MODULE"}</div>
           `;
 
           // Clamp so the tooltip never renders off the edge of a narrow
@@ -933,9 +934,9 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
           const tw = tooltip.offsetWidth || 160;
           const th = tooltip.offsetHeight || 60;
           const margin = 8;
-          let tx = sx + 12;
-          let ty = sy - 8;
-          if (tx + tw > rect.width - margin) tx = sx - tw - 12;
+          let tx = sx + 14;
+          let ty = sy - 10;
+          if (tx + tw > rect.width - margin) tx = sx - tw - 14;
           tx = Math.max(margin, Math.min(tx, rect.width - tw - margin));
           ty = Math.max(margin, Math.min(ty, rect.height - th - margin));
 
@@ -981,21 +982,26 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
           position: "absolute",
           top: "max(16px, env(safe-area-inset-top))",
           left: "max(16px, env(safe-area-inset-left))",
-          right: 16,
-          fontFamily: '"Share Tech Mono", monospace',
-          fontSize: isCompact ? 10.5 : 12,
-          color: "#F3F4F6",
-          display: "flex", alignItems: "center", gap: 10,
+          fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
+          fontSize: 10,
+          color: "rgba(245,158,11,0.6)",
+          display: "flex", alignItems: "center", gap: 8,
           pointerEvents: "none", zIndex: 20,
-          letterSpacing: isCompact ? "0.02em" : "normal",
+          letterSpacing: "0.12em",
+          background: "rgba(0,0,0,0.6)",
+          padding: "6px 12px",
+          border: "1px solid rgba(245,158,11,0.12)",
+          borderLeft: "2px solid rgba(245,158,11,0.4)",
         }}>
           <div style={{
             flexShrink: 0,
-            width: 8, height: 8,
-            background: "#DC2626",
+            width: 5, height: 5,
+            borderRadius: "50%",
+            background: "#f59e0b",
+            boxShadow: "0 0 6px #f59e0b",
             animation: "blink 1s step-start infinite"
           }} />
-          {isCompact ? "LOADING MODEL..." : "LOADING 3D SPACESHIP MODEL..."}
+          {isCompact ? "LOADING VESSEL..." : "ACQUIRING VESSEL COORDINATES..."}
         </div>
       )}
 
@@ -1004,36 +1010,34 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
         style={{
           position: "absolute", top: 0, left: 0,
           opacity: 0, pointerEvents: "none",
-          background: "rgba(8,10,14,0.92)",
-          backdropFilter: "blur(3px)",
-          border: "1px solid #dc2626",
-          clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%)",
-          padding: isCompact ? "10px 12px 8px" : "9px 10px 7px",
+          background: "rgba(4,6,10,0.88)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
+          padding: isCompact ? "12px 14px 10px" : "10px 12px 9px",
           fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
-          fontSize: isCompact ? "12px" : "11px", color: "#e5e7eb", lineHeight: 1.4,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.55), 0 0 12px rgba(220,38,38,0.22)",
-          transition: "opacity 140ms ease, transform 140ms ease",
+          fontSize: isCompact ? "12px" : "11px", color: "#c8d0d8", lineHeight: 1.5,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)",
+          transition: "opacity 180ms ease, transform 180ms cubic-bezier(0.16,1,0.3,1)",
           transformOrigin: "0 50%",
-          maxWidth: isCompact ? "min(78vw, 240px)" : "260px",
+          maxWidth: isCompact ? "min(78vw, 240px)" : "280px",
           whiteSpace: isCompact ? "normal" : "nowrap", zIndex: 10,
         }}
       />
 
+      {/* HUD bottom bar */}
       <div
         style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
           display: "flex",
           justifyContent: isCompact ? "flex-start" : "center",
-          alignItems: "center",
-          gap: isCompact ? 4 : 20,
+          alignItems: "flex-end",
+          gap: isCompact ? 6 : 10,
           padding: isCompact
-            ? "10px max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))"
-            : "12px 24px max(12px, env(safe-area-inset-bottom))",
-          background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
-          // The bar itself no longer blocks pointer events (buttons below
-          // opt back in individually), and on narrow screens it becomes a
-          // horizontally scrollable, snap-scrolling strip so six modules
-          // never wrap into an unreadable multi-row block or get clipped.
+            ? "20px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))"
+            : "24px 24px max(16px, env(safe-area-inset-bottom))",
+          background: "linear-gradient(to top, rgba(0,0,2,0.92) 0%, rgba(0,0,2,0.4) 60%, transparent 100%)",
           pointerEvents: "none",
           overflowX: isCompact ? "auto" : "visible",
           scrollSnapType: isCompact ? "x proximity" : undefined,
@@ -1048,32 +1052,62 @@ export function StarDestroyerDashboard({ className, style, modelUrl, scale = 1, 
             onClick={() => router.push(mod.href)}
             aria-label={`${mod.label}: ${mod.sublabel}`}
             style={{
-              display: "flex", alignItems: "center", gap: 6,
+              display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 3,
               flexShrink: 0,
               scrollSnapAlign: isCompact ? "start" : undefined,
-              minHeight: 44,
-              padding: isCompact ? "0 10px" : "0 4px",
-              background: "transparent",
-              border: "none",
-              borderRadius: 8,
+              minHeight: isCompact ? 44 : 52,
+              minWidth: isCompact ? 90 : 110,
+              padding: isCompact ? "8px 10px 7px" : "9px 14px 8px",
+              background: "rgba(255,255,255,0.025)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderTop: `1px solid ${mod.cssColor}44`,
+              borderRadius: 0,
               cursor: "pointer",
               pointerEvents: "auto",
               WebkitTapHighlightColor: "transparent",
               touchAction: "manipulation",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)",
+              transition: "background 180ms ease, border-color 180ms ease",
+              position: "relative",
             }}
-            onFocus={(e) => { e.currentTarget.style.outline = `2px solid ${mod.cssColor}`; e.currentTarget.style.outlineOffset = "2px"; }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = `${mod.cssColor}12`;
+              e.currentTarget.style.borderTopColor = `${mod.cssColor}99`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.025)";
+              e.currentTarget.style.borderTopColor = `${mod.cssColor}44`;
+            }}
+            onFocus={(e) => { e.currentTarget.style.outline = `1px solid ${mod.cssColor}88`; e.currentTarget.style.outlineOffset = "2px"; }}
             onBlur={(e) => { e.currentTarget.style.outline = "none"; }}
           >
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: mod.cssColor, boxShadow: `0 0 8px ${mod.cssColor}`, flexShrink: 0 }} />
-            <span style={{
-              fontFamily: '"IBM Plex Mono", monospace',
-              fontSize: isCompact ? 10 : 9,
-              color: "#94a3b8",
-              letterSpacing: "0.1em",
-              whiteSpace: "nowrap",
-            }}>
-              {mod.label}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", background: mod.cssColor, boxShadow: `0 0 6px ${mod.cssColor}`, flexShrink: 0 }} />
+              <span style={{
+                fontFamily: '"IBM Plex Mono", monospace',
+                fontSize: isCompact ? 8 : 8,
+                color: mod.cssColor,
+                letterSpacing: "0.14em",
+                whiteSpace: "nowrap",
+                opacity: 0.8,
+              }}>
+                {mod.label}
+              </span>
+            </div>
+            {!isCompact && (
+              <span style={{
+                fontFamily: '"IBM Plex Mono", monospace',
+                fontSize: 7,
+                color: "rgba(255,255,255,0.28)",
+                letterSpacing: "0.06em",
+                whiteSpace: "nowrap",
+                marginLeft: 9,
+              }}>
+                {mod.sublabel}
+              </span>
+            )}
           </button>
         ))}
       </div>

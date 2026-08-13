@@ -11,16 +11,47 @@ const StarDestroyerDashboard = dynamic(
 
 export default function DashboardPage() {
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#000", position: "relative", overflow: "hidden" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "#010105", position: "relative", overflow: "hidden" }}>
       <MinimalBwBackground />
+
+      {/* Corner HUD brackets — pure CSS, decorative only */}
+      {(["tl", "tr", "bl", "br"] as const).map((corner) => {
+        const isTop = corner.startsWith("t");
+        const isLeft = corner.endsWith("l");
+        return (
+          <div
+            key={corner}
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: isTop ? 12 : undefined,
+              bottom: isTop ? undefined : 12,
+              left: isLeft ? 12 : undefined,
+              right: isLeft ? undefined : 12,
+              width: 20,
+              height: 20,
+              borderTop: isTop ? "1px solid rgba(245,158,11,0.25)" : undefined,
+              borderBottom: isTop ? undefined : "1px solid rgba(245,158,11,0.25)",
+              borderLeft: isLeft ? "1px solid rgba(245,158,11,0.25)" : undefined,
+              borderRight: isLeft ? undefined : "1px solid rgba(245,158,11,0.25)",
+              pointerEvents: "none",
+              zIndex: 30,
+            }}
+          />
+        );
+      })}
 
       {/* Floating minimal navigation overlay top-right */}
       <div style={{
         position: "absolute", top: 20, right: 24, zIndex: 30,
-        display: "flex", alignItems: "center", gap: 18,
-        background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        borderRadius: 999, padding: "8px 20px",
+        display: "flex", alignItems: "center", gap: 20,
+        background: "rgba(0, 0, 0, 0.82)", backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderTop: "1px solid rgba(245, 158, 11, 0.15)",
+        borderRadius: 0,
+        padding: "9px 22px",
+        clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)",
       }}>
         {[
           { label: "CONSOLE", href: "/console" },
@@ -31,11 +62,17 @@ export default function DashboardPage() {
           { label: "AGENT", href: "/agent" },
         ].map((n) => (
           <Link key={n.href} href={n.href} style={{
-            fontFamily: "var(--font-nav)", fontSize: 9, letterSpacing: "0.14em",
-            color: "#94a3b8", textDecoration: "none", transition: "color 150ms",
+            fontFamily: "var(--font-nav)", fontSize: 8, letterSpacing: "0.18em",
+            color: "rgba(255,255,255,0.35)", textDecoration: "none", transition: "color 180ms, text-shadow 180ms",
           }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#f8fafc")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#94a3b8")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#f59e0b";
+              e.currentTarget.style.textShadow = "0 0 10px rgba(245,158,11,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "rgba(255,255,255,0.35)";
+              e.currentTarget.style.textShadow = "none";
+            }}
           >
             {n.label}
           </Link>

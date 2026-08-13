@@ -1,16 +1,20 @@
 :root {
-  --void: #05050a;
-  --ink: #d7dde3;
-  --ink-dim: #7a828c;
-  --imperial-red: #c81d25;
+  --void: #010105;
+  --ink: #cdd5de;
+  --ink-dim: #6a7480;
+  --imperial-red: #cc1b22;
   --signal-cyan: #2fd0c9;
-  --panel-bg: rgba(255, 255, 255, 0.04);
-  --panel-border: rgba(255, 255, 255, 0.08);
+  --holo-amber: #f59e0b;
+  --holo-blue: #22d3ee;
+  --panel-bg: rgba(255, 255, 255, 0.025);
+  --panel-border: rgba(255, 255, 255, 0.07);
+  --panel-border-amber: rgba(245, 158, 11, 0.25);
 
   --font-display: "Starjedi", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
 
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-fast: 150ms;
   --dur-base: 300ms;
   --dur-slow: 900ms;

@@ -1,15 +1,21 @@
 .log {
-  width: min(92vw, 480px);
+  width: 100%;
   margin: 0 auto;
-  font-size: 13px;
+  font-size: 11px;
   color: var(--ink-dim);
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 2px solid rgba(245, 158, 11, 0.2);
 }
 
 .lines {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   min-height: 92px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
 }
 
 .line {
@@ -23,11 +29,13 @@
 
 .status {
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+  flex-shrink: 0;
 }
 
 .status[data-status="OK"] {
-  color: var(--signal-cyan);
+  color: var(--holo-amber);
 }
 
 .status[data-status="WARN"] {
@@ -37,7 +45,7 @@
 .cursor {
   display: inline-block;
   margin-left: 2px;
-  color: var(--imperial-red);
+  color: var(--holo-amber);
   animation: blink 1s steps(1) infinite;
 }
 
@@ -49,23 +57,32 @@
 
 .progressTrack {
   margin-top: 14px;
-  height: 4px;
+  height: 3px;
   width: 100%;
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: var(--signal-cyan);
-  transition: width 0.3s var(--ease-standard);
+  background: linear-gradient(
+    to right,
+    rgba(245, 158, 11, 0.6),
+    rgba(245, 158, 11, 1) 60%,
+    rgba(255, 200, 80, 1) 100%
+  );
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  transition: width 0.35s var(--ease-standard);
 }
 
 .progressLabel {
-  margin-top: 6px;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  margin-top: 5px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
   text-align: right;
+  color: rgba(245, 158, 11, 0.5);
+  font-family: var(--font-mono);
 }
 
 @media (prefers-reduced-motion: reduce) {

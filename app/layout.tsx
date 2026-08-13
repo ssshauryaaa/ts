@@ -4,10 +4,12 @@ import {
   IBM_Plex_Sans,
   Exo_2,
   Chakra_Petch,
-  Share_Tech_Mono,
-} from 'next/font/google'
+  Share_Tech_Mono, Geist } from 'next/font/google'
 import './tokens.css'
 import './globals.css'
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   subsets: ['latin'],
@@ -51,13 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`
-        ${inter.variable}
-        ${ibmPlex.variable}
-        ${exo2.variable}
-        ${chakra.variable}
-        ${shareTech.variable}
-      `}
+      className={cn(inter.variable, ibmPlex.variable, exo2.variable, chakra.variable, shareTech.variable, "font-sans", geist.variable)}
     >
       <body>{children}</body>
     </html>

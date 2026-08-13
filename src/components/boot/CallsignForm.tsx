@@ -1,78 +1,62 @@
-"use client";
-
-import { FormEvent, useRef, useState } from "react";
-import gsap from "gsap";
+import React, { useRef, useState } from "react";
 import styles from "./CallsignForm.module.css";
 
-interface CallsignFormProps {
+export function CallsignForm({
+  visible,
+  onSubmit,
+}: {
   visible: boolean;
-  onSubmit: (callsign: string) => Promise<void>;
-}
+  onSubmit: (v: string) => void;
+}) {
+  const [callsign, setCallsign] = useState("");
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-export default function CallsignForm({ visible, onSubmit }: CallsignFormProps) {
-  const [value, setValue] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const ready = callsign.trim().length > 0;
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = value.trim();
-
-    if (!trimmed) {
-      if (formRef.current) {
-        gsap
-          .timeline()
-          .to(formRef.current, { x: -8, duration: 0.06 })
-          .to(formRef.current, { x: 8, duration: 0.06 })
-          .to(formRef.current, { x: -6, duration: 0.06 })
-          .to(formRef.current, { x: 0, duration: 0.06 });
-        gsap.fromTo(
-          formRef.current,
-          { boxShadow: "0 0 0 2px rgba(200,29,37,0.9)" },
-          { boxShadow: "0 0 0 0px rgba(200,29,37,0)", duration: 0.5 }
-        );
-      }
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      await onSubmit(trimmed);
-    } finally {
-      setSubmitting(false);
-    }
+    if (ready) onSubmit(callsign.trim());
   };
 
   return (
     <form
-      ref={formRef}
       className={styles.form}
       data-visible={visible}
       onSubmit={handleSubmit}
+      aria-hidden={!visible}
     >
-      <label className={styles.label} htmlFor="callsign">
-        CALLSIGN
+      <label htmlFor="callsign" className={styles.label}>
+        IDENTIFIER_REQUIRED
       </label>
-      <div className={styles.inputRow}>
-        <input
-          id="callsign"
-          className={styles.input}
-          type="text"
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          value={value}
-          disabled={submitting}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="ENTER DESIGNATION"
-        />
-        <span className={styles.blinkCursor} aria-hidden="true">
-          ▮
+
+      <div className={styles.line} data-focused={focused} onClick={() => inputRef.current?.focus()}>
+        <span className={styles.prompt} aria-hidden="true">
+          &gt;
         </span>
+
+        <input
+          ref={inputRef}
+          id="callsign"
+          type="text"
+          className={styles.input}
+          placeholder="ENTER_CALLSIGN"
+          value={callsign}
+          onChange={(e) => setCallsign(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          autoComplete="off"
+          spellCheck={false}
+          tabIndex={visible ? 0 : -1}
+          autoFocus={visible}
+        />
+
+        <button type="submit" className={styles.transmit} disabled={!ready} tabIndex={visible ? 0 : -1}>
+          [&nbsp;TRANSMIT&nbsp;]
+        </button>
+
+        <span className={styles.baseline} aria-hidden="true" />
       </div>
-      <button type="submit" className={styles.submit} disabled={submitting}>
-        {submitting ? "PROCESSING..." : "TRANSMIT →"}
-      </button>
     </form>
   );
 }
