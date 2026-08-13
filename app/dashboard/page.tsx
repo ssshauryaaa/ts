@@ -58,7 +58,7 @@ export default function DashboardPage() {
       <StarDestroyerDashboard
         scale={1.4}
         verticalOffset={1}
-        modelUrl="/modals/glb.glb"
+        modelUrl="/modals/glb-compressed.glb"
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
       />
     </div>
