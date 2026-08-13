@@ -218,8 +218,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    background-color: #000 !important;
   }
   html {
     @apply font-sans;
+    background-color: #000 !important;
   }
 }
